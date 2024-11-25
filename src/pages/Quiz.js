@@ -200,15 +200,12 @@ function Quiz() {
                 key={index}
                 block
                 size="large"
-                onClick={() => handleAnswerClick(index)}
-                className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 ${
-                  showAnswer && index === questions[currentQuestion].correct
-                    ? 'border-green-500 bg-green-50'
-                    : showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct
-                    ? 'border-red-500 bg-red-50'
-                    : ''
-                }`}
-                disabled={showAnswer}
+                onClick={() => !showAnswer && handleAnswerClick(index)}
+                className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 
+                  ${showAnswer && index === questions[currentQuestion].correct ? 'border-green-500 bg-green-50' : ''}
+                  ${showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct ? 'border-red-500 bg-red-50' : ''}
+                  ${showAnswer ? 'cursor-default' : 'hover:border-gray-400'}`}
+                style={{ opacity: 1 }}
               >
                 <div className="flex">
                   <div className="flex-grow text-sm sm:text-base">{answer}</div>

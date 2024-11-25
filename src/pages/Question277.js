@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Radio, Button, Card, Typography, Checkbox } from 'antd';
+import { Radio, Button, Card, Typography, Checkbox, Row, Col, Space } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import Quiz2 from './Quiz2';
 
@@ -21,7 +21,7 @@ const Question277 = () => {
         const sets = [];
         for (let i = 0; i < questions.length; i += 50) {
           sets.push({
-            name: `Set ${Math.floor(i/50) + 1} (Questions ${i + 1}-${Math.min(i + 50, questions.length)})`,
+            name: `Gói ${Math.floor(i/50) + 1} (Câu hỏi ${i + 1}-${Math.min(i + 50, questions.length)})`,
             questions: questions.slice(i, i + 50)
           });
         }
@@ -65,70 +65,57 @@ const Question277 = () => {
   };
 
   return (
-    <div style={{ maxWidth: 800, margin: '20px auto', padding: '0 16px' }}>
-      <Card>
-        <Title level={2} style={{ textAlign: 'center', color: '#1890ff' }}>
-          Bộ đề 277 câu
+    <div className="max-w-4xl mx-auto px-4 py-5 w-full">
+      <Card className="shadow-md">
+        <Title 
+          level={2} 
+          className="text-center text-blue-500 md:text-3xl text-2xl mb-6"
+        >
+          277 câu hỏi Quản lý dự án
         </Title>
-        
-        <Text style={{ display: 'block', marginBottom: 20, textAlign: 'center' }}>
-          Vui lòng chọn một hoặc nhiều bộ câu hỏi bạn muốn làm bài
-        </Text>
 
-        <div style={{ 
-          background: '#f5f5f5',
-          padding: '20px',
-          borderRadius: '8px',
-          marginBottom: '20px'
-        }}>
+        <div className="bg-gray-100 p-4 md:p-5 rounded-lg mb-5">
           <Checkbox.Group 
             onChange={handleSetChange} 
             value={selectedSets}
-            style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '12px'
-            }}
+            className="flex flex-col space-y-3"
           >
             {questionSets.map((set, index) => (
               <Checkbox key={index} value={index}>
-                {set.name}
+                <span className="md:text-base text-sm">
+                  {set.name}
+                </span>
               </Checkbox>
             ))}
           </Checkbox.Group>
         </div>
 
-        <div style={{ textAlign: 'center' }}>
-          <Button
-            type="primary"
-            size="large"
-            onClick={handleStartQuiz}
-            disabled={selectedSets.length === 0}
-            style={{ 
-              minWidth: 200,
-              height: 45,
-              fontSize: '16px',
-              fontWeight: 'bold',
-              marginRight: '16px'
-            }}
-          >
-            Bắt đầu làm bài
-          </Button>
-          <Button
-            type="default"
-            size="large"
-            onClick={handleViewAllQuestions}
-            disabled={questionSets.length === 0}
-            style={{ 
-              minWidth: 200,
-              height: 45,
-              fontSize: '16px',
-              fontWeight: 'bold'
-            }}
-          >
-            Xem tất cả câu hỏi
-          </Button>
-        </div>
+        <Row gutter={[16, 16]} justify="center">
+          <Col xs={24} md={12} lg={8}>
+            <Button
+              type="primary"
+              size="large"
+              onClick={handleStartQuiz}
+              disabled={selectedSets.length === 0}
+              block
+              className="h-12 font-bold text-base"
+            >
+              Bắt đầu làm bài
+            </Button>
+          </Col>
+          <Col xs={24} md={12} lg={8}>
+            <Button
+              type="default"
+              size="large"
+              onClick={handleViewAllQuestions}
+              disabled={questionSets.length === 0}
+              block
+              className="h-12 font-bold text-base"
+            >
+              Xem tất cả câu hỏi
+            </Button>
+          </Col>
+        </Row>
       </Card>
     </div>
   );

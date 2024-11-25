@@ -177,15 +177,12 @@ const Quiz2 = () => {
                 key={key}
                 block
                 size="large"
-                className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 ${
-                  showAnswer && key === currentQuestionData.answer
-                    ? 'border-green-500 bg-green-50'
-                    : showAnswer && key === selectedAnswer && key !== currentQuestionData.answer
-                    ? 'border-red-500 bg-red-50'
-                    : ''
-                }`}
+                className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 
+                  ${showAnswer && key === currentQuestionData.answer ? 'border-green-500 bg-green-50' : ''}
+                  ${showAnswer && key === selectedAnswer && key !== currentQuestionData.answer ? 'border-red-500 bg-red-50' : ''}
+                  ${showAnswer ? 'cursor-default' : 'hover:border-gray-400'}`}
                 onClick={() => !showAnswer && handleAnswerChange({ target: { value: key } })}
-                disabled={showAnswer}
+                style={{ opacity: 1 }}
               >
                 <Radio value={key} style={{ display: 'none' }} />
                 <div className="flex">

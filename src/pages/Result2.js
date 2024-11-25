@@ -9,13 +9,13 @@ const Result2 = () => {
   const navigate = useNavigate();
   const { score, total, questions, userAnswers, earlyEnd, questionsAttempted } = location.state || {};
 
-  const percentage = Math.round((score / (earlyEnd ? questionsAttempted : total)) * 100);
+  const percentage = Math.round((score / total) * 100);
 
   const getResultMessage = () => {
     if (percentage >= 80) return "Xuất sắc!";
     if (percentage >= 60) return "Khá tốt!";
-    if (percentage >= 40) return "Cần cải thiện";
-    return "Cần học lại";
+    if (percentage >= 40) return "Cần cải thiện!";
+    return "Cần cố gắng hơn!";
   };
 
   const handleReviewAnswers = () => {
@@ -27,14 +27,14 @@ const Result2 = () => {
   };
 
   if (!location.state) {
-    return <div>Không có dữ liệu</div>;
+    return <div>Không có dữ liệu kết quả</div>;
   }
 
   return (
     <div className="p-4 min-h-screen bg-gray-50">
       <Card className="max-w-2xl mx-auto">
         <div className="text-center space-y-6">
-          <Title level={2}>Kết quả bài thi</Title>
+          <Title level={2}>Kết Quả Bài Thi</Title>
           
           <div className="flex justify-center">
             <Progress
@@ -50,21 +50,21 @@ const Result2 = () => {
           <div className="space-y-2">
             <Title level={3}>{getResultMessage()}</Title>
             <Text className="text-lg block">
-              Điểm số: {score}/{earlyEnd ? questionsAttempted : total}
+              Số Câu Đúng: {score}/{total}
             </Text>
             {earlyEnd && (
               <Text type="secondary" className="block">
-                Bài thi kết thúc sớm sau {questionsAttempted} câu hỏi
+                Bài thi đã kết thúc sau khi làm {questionsAttempted} câu hỏi
               </Text>
             )}
           </div>
 
           <Space size="middle">
             <Button type="primary" onClick={handleReviewAnswers}>
-              Xem lại đáp án
+              Xem Lại Chi Tiết
             </Button>
             <Button onClick={handleReturnHome}>
-              Về trang chủ
+              Trang Chủ
             </Button>
           </Space>
         </div>
