@@ -1,13 +1,31 @@
 import { useNavigate } from 'react-router-dom';
-import { Button, Typography, Checkbox, Row, Col, message } from 'antd';
+import { Button, Typography, Checkbox, Row, Col, message, Spin } from 'antd';
 import { PlayCircleOutlined } from '@ant-design/icons';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { fetchQuestions } from '../services/questionService';
 
 const { Title } = Typography;
 
 function Home() {
   const navigate = useNavigate();
   const [selectedPackages, setSelectedPackages] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadQuestions = async () => {
+      try {
+        const data = await fetchQuestions();
+        setQuestions(data);
+        setLoading(false);
+      } catch (error) {
+        message.error('Không thể tải câu hỏi');
+        setLoading(false);
+      }
+    };
+    loadQuestions();
+  }, []);
+
   const packages = Array.from({ length: 24 }, (_, i) => ({
     id: i + 1,
     name: `Gói ${i + 1} (Câu hỏi ${i * 50 + 1}-${(i + 1) * 50})`,
@@ -18,8 +36,27 @@ function Home() {
       message.warning('Vui lòng chọn ít nhất một gói câu hỏi');
       return;
     }
-    navigate('/quiz', { state: { packages: selectedPackages } });
+    
+    const selectedQuestions = questions.filter(q => 
+      selectedPackages.includes(q.packageId)
+    );
+
+    navigate('/quiz', { 
+      state: { 
+        packages: selectedPackages,
+        questions: selectedQuestions,
+        allQuestions: questions // Pass all questions for reference
+      } 
+    });
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center space-y-8 mt-8 px-4">
@@ -48,7 +85,7 @@ function Home() {
             ))}
           </Row>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4 flex-wrap">
           <Button
             type="primary"
             size="large"
@@ -57,6 +94,16 @@ function Home() {
             className="min-w-[200px] h-12 text-base font-medium"
           >
             Bắt Đầu ({selectedPackages.length} gói đã chọn)
+          </Button>
+          <Button
+            type="default"
+            size="large"
+            onClick={() => navigate('/review-all', { 
+              state: { questions: questions } 
+            })}
+            className="min-w-[200px] h-12 text-base font-medium"
+          >
+            Xem Tất Cả Câu Hỏi
           </Button>
         </div>
       </div>

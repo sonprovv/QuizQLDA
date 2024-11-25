@@ -7,6 +7,8 @@ import axios from 'axios';
 const { Title, Text } = Typography;
 
 function Quiz() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -16,55 +18,21 @@ function Quiz() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [canNavigate, setCanNavigate] = useState(false);
   const [timer, setTimer] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [sequentialNumbers, setSequentialNumbers] = useState({});
   const selectedPackages = location.state?.packages || [];
 
+  // Thêm hàm tính số thứ tự câu hỏi
+  const getQuestionNumber = (index, packageId) => {
+    return ((packageId - 1) * 50) + index + 1;
+  };
+
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await axios.get('https://qlda-8ec11-default-rtdb.asia-southeast1.firebasedatabase.app/-OCZ9vgJBL6bGDGH5rpB.json');
-        const questionsData = Object.entries(response.data)
-          .map(([id, data]) => ({
-            ...data,
-            id
-          }))
-          .sort((a, b) => a.index - b.index);
-        
-        // Filter questions based on selected packages
-        const filteredQuestions = questionsData.filter(question => {
-          const packageNumber = Math.floor((question.index - 1) / 50) + 1;
-          return selectedPackages.includes(packageNumber);
-        });
-
-        // Log indices for debugging
-        console.log("Question indices:", filteredQuestions.map(q => q.index));
-        console.log("Selected packages:", selectedPackages);
-        
-        // Remove duplicates based on index
-        const uniqueQuestions = filteredQuestions.reduce((acc, current) => {
-          const x = acc.find(item => item.index === current.index);
-          if (!x) {
-            return acc.concat([current]);
-          } else {
-            return acc;
-          }
-        }, []);
-
-        // Sort again after removing duplicates
-        uniqueQuestions.sort((a, b) => a.index - b.index);
-        
-        // Log after removing duplicates
-        console.log("Unique indices:", uniqueQuestions.map(q => q.index));
-        
-        setQuestions(uniqueQuestions);
-      } catch (error) {
-        console.error('Error fetching questions:', error);
-      }
-    };
-
-    fetchQuestions();
-  }, [selectedPackages]);
+    if (!location.state?.questions) {
+      navigate('/'); // Redirect if no questions data
+      return;
+    }
+    setQuestions(location.state.questions);
+  }, [location.state, navigate]);
 
   // Add new useEffect for auto-navigation
   useEffect(() => {
@@ -204,17 +172,19 @@ function Quiz() {
             </Button>
           </div>
 
-          {/* Question counter */}
+          {/* Question counter - Modified */}
           <div className="text-right">
             <Text strong className="text-sm sm:text-base">
-              Câu {questions[currentQuestion].index} / {questions[questions.length - 1].index}
+              Câu {currentQuestion + 1} / {questions.length}
             </Text>
           </div>
 
-          {/* Question text */}
+          {/* Question text - Modified */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <Title level={4} className="text-base sm:text-lg break-words whitespace-pre-wrap">
-              <span className="font-bold">Câu {questions[currentQuestion].index}:</span> {questions[currentQuestion].question}
+              <span className="font-bold">
+                Câu {currentQuestion + 1}:
+              </span> {questions[currentQuestion].question}
             </Title>
           </div>
 
