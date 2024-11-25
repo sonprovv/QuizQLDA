@@ -1,24 +1,29 @@
-import logo from './logo.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Layout } from 'antd';
+import Navigation from './components/Navigation';
+import Home from './pages/Home';
+import Quiz from './pages/Quiz';
+import ResultPage from './pages/Result';
 import './App.css';
+
+const { Header, Content } = Layout;
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Layout className="min-h-screen">
+        <Header className="bg-white">
+          <Navigation />
+        </Header>
+        <Content className="max-w-4xl mx-auto p-6">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/result" element={<ResultPage />} />
+          </Routes>
+        </Content>
+      </Layout>
+    </Router>
   );
 }
 
