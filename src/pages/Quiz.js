@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, Button, Space, Progress, Typography, Modal } from 'antd';
-import { StopOutlined } from '@ant-design/icons';
+import { StopOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
 const { Title, Text } = Typography;
@@ -12,6 +12,10 @@ function Quiz() {
   const [score, setScore] = useState(0);
   const [userAnswers, setUserAnswers] = useState([]);
   const [showEndModal, setShowEndModal] = useState(false);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [canNavigate, setCanNavigate] = useState(false);
+  const [timer, setTimer] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
   const selectedPackages = location.state?.packages || [];
@@ -19,18 +23,41 @@ function Quiz() {
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('https://qlda-8ec11-default-rtdb.asia-southeast1.firebasedatabase.app/questions/-OCYRzM0Fnt9yZfaAAwP.json');
-        const questionsData = Object.values(response.data);
+        const response = await axios.get('https://qlda-8ec11-default-rtdb.asia-southeast1.firebasedatabase.app/-OCZ9vgJBL6bGDGH5rpB.json');
+        const questionsData = Object.entries(response.data)
+          .map(([id, data]) => ({
+            ...data,
+            id
+          }))
+          .sort((a, b) => a.index - b.index);
         
         // Filter questions based on selected packages
-        const filteredQuestions = questionsData.filter((_, index) => {
-          const packageNumber = Math.floor(index / 50) + 1;
+        const filteredQuestions = questionsData.filter(question => {
+          const packageNumber = Math.floor((question.index - 1) / 50) + 1;
           return selectedPackages.includes(packageNumber);
         });
+
+        // Log indices for debugging
+        console.log("Question indices:", filteredQuestions.map(q => q.index));
+        console.log("Selected packages:", selectedPackages);
         
-        // Shuffle questions
-        const shuffledQuestions = filteredQuestions.sort(() => Math.random() - 0.5);
-        setQuestions(shuffledQuestions);
+        // Remove duplicates based on index
+        const uniqueQuestions = filteredQuestions.reduce((acc, current) => {
+          const x = acc.find(item => item.index === current.index);
+          if (!x) {
+            return acc.concat([current]);
+          } else {
+            return acc;
+          }
+        }, []);
+
+        // Sort again after removing duplicates
+        uniqueQuestions.sort((a, b) => a.index - b.index);
+        
+        // Log after removing duplicates
+        console.log("Unique indices:", uniqueQuestions.map(q => q.index));
+        
+        setQuestions(uniqueQuestions);
       } catch (error) {
         console.error('Error fetching questions:', error);
       }
@@ -39,36 +66,96 @@ function Quiz() {
     fetchQuestions();
   }, [selectedPackages]);
 
-  const handleAnswerClick = (answerIndex) => {
-    const isCorrect = answerIndex === questions[currentQuestion].correct;
-    if (isCorrect) {
-      setScore(score + 1);
-    }
-    
-    // Store user's answer
-    setUserAnswers([...userAnswers, {
-      questionIndex: currentQuestion,
-      userAnswer: answerIndex,
-      isCorrect
-    }]);
+  // Add new useEffect for auto-navigation
+  useEffect(() => {
+    if (showAnswer && timer === null) {
+      setTimer(5);
+      const interval = setInterval(() => {
+        setTimer((prevTimer) => {
+          if (prevTimer <= 1) {
+            clearInterval(interval);
+            handleNext();
+            return null;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
 
+      return () => clearInterval(interval);
+    }
+  }, [showAnswer]);
+
+  const handleAnswerClick = (answerIndex) => {
+    if (showAnswer) return; // Prevent selecting another answer while showing feedback
+    
+    const isCorrect = answerIndex === questions[currentQuestion].correct;
+    setSelectedAnswer(answerIndex);
+    setShowAnswer(true);
+    setCanNavigate(true);
+    
+    // Sửa: Sử dụng index từ data thay vì currentQuestion
+    const currentQuestionIndex = questions[currentQuestion].index;
+    const existingAnswerIndex = userAnswers.findIndex(a => a.questionIndex === currentQuestionIndex);
+    
+    if (existingAnswerIndex !== -1) {
+      const newUserAnswers = [...userAnswers];
+      newUserAnswers[existingAnswerIndex] = {
+        questionIndex: currentQuestionIndex, // Sử dụng index từ data
+        userAnswer: answerIndex,
+        isCorrect
+      };
+      setUserAnswers(newUserAnswers);
+    } else {
+      if (isCorrect) {
+        setScore(score + 1);
+      }
+      setUserAnswers([...userAnswers, {
+        questionIndex: currentQuestionIndex, // Sử dụng index từ data
+        userAnswer: answerIndex,
+        isCorrect
+      }]);
+    }
+  };
+
+  const handleNext = () => {
     const nextQuestion = currentQuestion + 1;
     if (nextQuestion < questions.length) {
       setCurrentQuestion(nextQuestion);
+      // Sửa: Sử dụng index từ data để tìm câu trả lời
+      const nextQuestionIndex = questions[nextQuestion].index;
+      const nextQuestionAnswer = userAnswers.find(a => a.questionIndex === nextQuestionIndex);
+      if (nextQuestionAnswer) {
+        setShowAnswer(true);
+        setSelectedAnswer(nextQuestionAnswer.userAnswer);
+      } else {
+        setShowAnswer(false);
+        setSelectedAnswer(null);
+        setCanNavigate(false);
+      }
     } else {
       navigate('/result', { 
         state: { 
           score, 
           total: questions.length,
           packages: selectedPackages,
-          questions, // Pass full questions
-          userAnswers: [...userAnswers, { // Include last answer
-            questionIndex: currentQuestion,
-            userAnswer: answerIndex,
-            isCorrect
-          }]
+          questions, // Gửi tất cả câu hỏi
+          userAnswers
         } 
       });
+    }
+  };
+
+  const handlePrevious = () => {
+    const prevQuestion = currentQuestion - 1;
+    if (prevQuestion >= 0) {
+      setCurrentQuestion(prevQuestion);
+      // Sửa: Sử dụng index từ data để tìm câu trả lời
+      const prevQuestionIndex = questions[prevQuestion].index;
+      const prevQuestionAnswer = userAnswers.find(a => a.questionIndex === prevQuestionIndex);
+      if (prevQuestionAnswer) {
+        setShowAnswer(true);
+        setSelectedAnswer(prevQuestionAnswer.userAnswer);
+      }
     }
   };
 
@@ -78,7 +165,7 @@ function Quiz() {
         score,
         total: questions.length,
         packages: selectedPackages,
-        questions: questions.slice(0, currentQuestion + 1), // Only include attempted questions
+        questions: questions, // Gửi tất cả câu hỏi, không cắt slice
         userAnswers,
         earlyEnd: true,
         questionsAttempted: currentQuestion + 1
@@ -86,14 +173,20 @@ function Quiz() {
     });
   };
 
+  // Thêm hàm tính số câu đã làm
+  const getCompletedQuestions = () => {
+    return userAnswers.length;
+  };
+
   if (questions.length === 0) {
     return <div>Loading...</div>;
   }
 
   return (
-    <>
-      <Card className="w-full max-w-2xl mx-auto">
+    <div className="p-4 min-h-screen bg-gray-50">
+      <Card className="w-full max-w-4xl mx-auto">
         <div className="space-y-4 sm:space-y-6">
+          {/* Progress and End Quiz button */}
           <div className="flex flex-col sm:flex-row gap-4 items-center">
             <Progress 
               percent={(currentQuestion / questions.length) * 100} 
@@ -105,47 +198,108 @@ function Quiz() {
               danger
               icon={<StopOutlined />}
               onClick={() => setShowEndModal(true)}
+              className="whitespace-nowrap"
             >
-              End Quiz
+              Kết thúc bài thi
             </Button>
           </div>
+
+          {/* Question counter */}
           <div className="text-right">
             <Text strong className="text-sm sm:text-base">
-              Question {currentQuestion + 1}/{questions.length}
+              Câu {questions[currentQuestion].index} / {questions[questions.length - 1].index}
             </Text>
           </div>
-          <Title level={4} className="text-base sm:text-lg">
-            {questions[currentQuestion].question}
-          </Title>
-          <Space direction="vertical" className="w-full" size="small">
+
+          {/* Question text */}
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <Title level={4} className="text-base sm:text-lg break-words whitespace-pre-wrap">
+              <span className="font-bold">Câu {questions[currentQuestion].index}:</span> {questions[currentQuestion].question}
+            </Title>
+          </div>
+
+          {/* Answer buttons */}
+          <div className="space-y-3">
             {questions[currentQuestion].answers.map((answer, index) => (
               <Button 
                 key={index}
                 block
                 size="large"
                 onClick={() => handleAnswerClick(index)}
-                className="text-left text-sm sm:text-base py-2 px-4"
+                className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 ${
+                  showAnswer && index === questions[currentQuestion].correct
+                    ? 'border-green-500 bg-green-50'
+                    : showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct
+                    ? 'border-red-500 bg-red-50'
+                    : ''
+                }`}
+                disabled={showAnswer}
               >
-                {answer}
+                <div className="flex">
+                  <div className="flex-grow text-sm sm:text-base">{answer}</div>
+                  {showAnswer && index === questions[currentQuestion].correct && (
+                    <CheckCircleOutlined className="text-green-500 ml-2 flex-shrink-0" />
+                  )}
+                  {showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct && (
+                    <CloseCircleOutlined className="text-red-500 ml-2 flex-shrink-0" />
+                  )}
+                </div>
               </Button>
             ))}
-          </Space>
+          </div>
+
+          {/* Explanation */}
+          {showAnswer && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <Text strong>
+                  {selectedAnswer === questions[currentQuestion].correct 
+                    ? "✅ Đúng!" 
+                    : "❌ Sai!"}
+                </Text>
+                {timer && <Text>Chuyển câu sau: {timer}s</Text>}
+              </div>
+              {questions[currentQuestion].explanation && (
+                <Text className="block mt-2 whitespace-pre-wrap break-words">
+                  Giải thích: {questions[currentQuestion].explanation}
+                </Text>
+              )}
+            </div>
+          )}
+
+          {/* Navigation buttons */}
+          <div className="mt-4 flex justify-between">
+            <Button 
+              onClick={handlePrevious}
+              disabled={currentQuestion === 0}
+            >
+              Câu trước
+            </Button>
+            <Button 
+              type="primary"
+              onClick={handleNext}
+              disabled={!canNavigate && !userAnswers.find(a => a.questionIndex === currentQuestion)}
+            >
+              {currentQuestion === questions.length - 1 ? 'Hoàn thành' : 'Câu tiếp'}
+            </Button>
+          </div>
         </div>
       </Card>
 
+      {/* End Quiz Modal */}
       <Modal
-        title="End Quiz Early"
+        title="Kết thúc bài thi sớm"
         open={showEndModal}
         onOk={handleEndQuiz}
         onCancel={() => setShowEndModal(false)}
-        okText="Yes, end quiz"
-        cancelText="No, continue"
+        okText="Có, kết thúc"
+        cancelText="Không, tiếp tục"
         okButtonProps={{ danger: true }}
       >
-        <p>Are you sure you want to end the quiz early? You have completed {currentQuestion} out of {questions.length} questions.</p>
-        <p>Your current score is: {score}/{currentQuestion}</p>
+        <p>Bạn có chắc muốn kết thúc bài thi sớm? Bạn đã hoàn thành {getCompletedQuestions()} trong số {questions.length} câu hỏi.</p>
+        <p>Điểm hiện tại của bạn là: {score}/{getCompletedQuestions()}</p>
       </Modal>
-    </>
+    </div>
   );
 }
 
