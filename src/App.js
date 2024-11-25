@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
 import ResultPage from './pages/Result';
+import ReviewAnswers from './pages/ReviewAnswers';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/quiz" element={<Quiz />} />
             <Route path="/result" element={<ResultPage />} />
+            <Route path='/review' element={<ReviewAnswers />} />
           </Routes>
         </Content>
       </Layout>

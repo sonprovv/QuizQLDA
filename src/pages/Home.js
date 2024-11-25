@@ -8,7 +8,6 @@ const { Title } = Typography;
 function Home() {
   const navigate = useNavigate();
   const [selectedPackages, setSelectedPackages] = useState([]);
-
   const packages = Array.from({ length: 24 }, (_, i) => ({
     id: i + 1,
     name: `Package ${i + 1} (Questions ${i * 50 + 1}-${(i + 1) * 50})`,
