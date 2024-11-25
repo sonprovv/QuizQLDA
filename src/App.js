@@ -3,9 +3,15 @@ import { Layout } from 'antd';
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
+import Quiz2 from './pages/Quiz2';
 import ResultPage from './pages/Result';
 import ReviewAnswers from './pages/ReviewAnswers';
-import Questions from './pages/Questions'; // Add this line
+import Questions from './pages/Questions';
+import Question1200 from './pages/Question1200';
+import Question277 from './pages/Question277';
+import Result2 from './pages/Result2';
+import ReviewAnswer2 from './pages/ReviewAnswer2';
+import ViewAllQuestions from './pages/ViewAllQuestions';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -21,9 +27,15 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quiz" element={<Quiz />} />
+            <Route path="/quiz2" element={<Quiz2 />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path='/review' element={<ReviewAnswers />} />
-            <Route path='/review-all' element={<Questions />} /> {/* Add this line */}
+            <Route path='/review-all-1200' element={<Questions />} />
+            <Route path='/1200' element={<Question1200 />} />
+            <Route path='/277' element={<Question277 />} />
+            <Route path='result2' element={<Result2 />} />
+            <Route path='review-answers2' element={<ReviewAnswer2 />} />
+            <Route path="/review-all-277" element={<ViewAllQuestions />} />
           </Routes>
         </Content>
       </Layout>
