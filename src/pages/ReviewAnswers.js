@@ -9,6 +9,10 @@ function ReviewAnswers() {
     const navigate = useNavigate();
     const { questions = [], userAnswers = [] } = location.state || {};
 
+    const getRealQuestionNumber = (question) => {
+        return ((question.packageId - 1) * 50) + question.orderNumber;
+    };
+
     if (!questions?.length) {
         return (
             <div className="max-w-3xl mx-auto p-4">
@@ -35,18 +39,18 @@ function ReviewAnswers() {
             </Space>
             <List
                 dataSource={questions}
-                renderItem={(question) => { // Bỏ index parameter vì không cần
+                renderItem={(question) => {
                     const userAnswer = userAnswers.find(a => a.questionIndex === question.index);
                     return (
                         <Card 
                             className="mb-4" 
-                            key={question.id} // Sử dụng question.id thay vì index
+                            key={question.id}
                             size="small" 
                             bodyStyle={{ padding: '16px' }}
                             title={
                                 <div className="flex justify-between items-center">
                                     <Text strong className="text-sm sm:text-base">
-                                        Câu {question.index} {/* Sử dụng index từ data thay vì index của mảng */}
+                                        Câu {getRealQuestionNumber(question)}
                                     </Text>
                                     {!userAnswer && (
                                         <Tag color="default">Chưa làm</Tag>
