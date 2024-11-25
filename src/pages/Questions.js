@@ -37,6 +37,11 @@ function Questions() {
       q.answers.some(answer => answer.toLowerCase().includes(searchText.toLowerCase()))
     );
 
+  // Add function to get real question number
+  const getRealQuestionNumber = (question) => {
+    return ((question.packageId - 1) * 50) + question.orderNumber;
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-4">
       <Space className="w-full justify-between mb-4 flex-wrap">
@@ -77,10 +82,10 @@ function Questions() {
           onChange: (page) => setCurrentPage(page),
           current: currentPage
         }}
-        renderItem={(item) => ( // removed index parameter since we're not using it
+        renderItem={(item) => (
           <Card className="mb-4" key={item.id}>
             <div className="mb-4">
-              <Text strong>Câu {item.orderNumber}:</Text> {item.question}
+              <Text strong>Câu {getRealQuestionNumber(item)}:</Text> {item.question}
             </div>
             <div className="pl-4 space-y-2">
               {item.answers.map((answer, index) => (

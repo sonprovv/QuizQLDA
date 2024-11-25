@@ -26,6 +26,11 @@ function Quiz() {
     return ((packageId - 1) * 50) + index + 1;
   };
 
+  // Add this function to get the real question number
+  const getRealQuestionNumber = (question) => {
+    return ((question.packageId - 1) * 50) + question.orderNumber;
+  };
+
   useEffect(() => {
     if (!location.state?.questions) {
       navigate('/'); // Redirect if no questions data
@@ -172,18 +177,18 @@ function Quiz() {
             </Button>
           </div>
 
-          {/* Question counter - Modified */}
+          {/* Update Question counter */}
           <div className="text-right">
             <Text strong className="text-sm sm:text-base">
-              Câu {currentQuestion + 1} / {questions.length}
+              Câu {getRealQuestionNumber(questions[currentQuestion])} / {questions.length}
             </Text>
           </div>
 
-          {/* Question text - Modified */}
+          {/* Update Question text */}
           <div className="bg-white p-4 rounded-lg shadow-sm">
             <Title level={4} className="text-base sm:text-lg break-words whitespace-pre-wrap">
               <span className="font-bold">
-                Câu {currentQuestion + 1}:
+                Câu {getRealQuestionNumber(questions[currentQuestion])}:
               </span> {questions[currentQuestion].question}
             </Title>
           </div>
@@ -256,7 +261,7 @@ function Quiz() {
         </div>
       </Card>
 
-      {/* End Quiz Modal */}
+      {/* Update Modal text */}
       <Modal
         title="Kết thúc bài thi sớm"
         open={showEndModal}
