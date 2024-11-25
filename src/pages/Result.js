@@ -19,27 +19,28 @@ function ResultPage() {
   const percentage = Math.round((score / total) * 100);
 
   return (
-    <Card className="max-w-md mx-auto">
+    <Card className="w-full max-w-md mx-auto">
       <AntResult
         status={percentage >= 70 ? "success" : "warning"}
-        title={earlyEnd ? "Quiz Ended Early" : "Quiz Completed!"}
+        title={<span className="text-lg sm:text-xl">{earlyEnd ? "Quiz Ended Early" : "Quiz Completed!"}</span>}
         subTitle={
           <div className="space-y-4">
-            <Title level={3}>
+            <Title level={3} className="text-base sm:text-lg">
               You scored {score} out of {earlyEnd ? questionsAttempted : total} ({percentage}%)
             </Title>
             {earlyEnd && (
-              <Text type="secondary">
+              <Text type="secondary" className="text-sm sm:text-base">
                 Quiz ended early. Attempted {questionsAttempted} out of {total} questions.
               </Text>
             )}
             <div className="text-left">
-              <Text strong>Packages attempted:</Text>
+              <Text strong className="text-sm sm:text-base">Packages attempted:</Text>
               <List
                 size="small"
+                className="mt-2"
                 dataSource={packages.sort((a, b) => a - b)}
                 renderItem={pkg => (
-                  <List.Item>
+                  <List.Item className="text-xs sm:text-sm">
                     Package {pkg} (Questions {(pkg-1)*50 + 1}-{pkg*50})
                   </List.Item>
                 )}
@@ -48,7 +49,7 @@ function ResultPage() {
           </div>
         }
         extra={
-          <Space>
+          <Space wrap className="justify-center w-full">
             <Button 
               type="primary" 
               icon={<HomeFilled />}

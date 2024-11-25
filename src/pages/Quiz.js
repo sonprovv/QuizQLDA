@@ -92,13 +92,13 @@ function Quiz() {
 
   return (
     <>
-      <Card className="max-w-2xl mx-auto">
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
+      <Card className="w-full max-w-2xl mx-auto">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
             <Progress 
               percent={(currentQuestion / questions.length) * 100} 
               showInfo={false}
-              className="flex-1 mr-4"
+              className="w-full sm:flex-1 sm:mr-4"
             />
             <Button 
               type="default" 
@@ -110,19 +110,21 @@ function Quiz() {
             </Button>
           </div>
           <div className="text-right">
-            <Text strong>
+            <Text strong className="text-sm sm:text-base">
               Question {currentQuestion + 1}/{questions.length}
             </Text>
           </div>
-          <Title level={4}>{questions[currentQuestion].question}</Title>
-          <Space direction="vertical" className="w-full">
+          <Title level={4} className="text-base sm:text-lg">
+            {questions[currentQuestion].question}
+          </Title>
+          <Space direction="vertical" className="w-full" size="small">
             {questions[currentQuestion].answers.map((answer, index) => (
               <Button 
                 key={index}
                 block
                 size="large"
                 onClick={() => handleAnswerClick(index)}
-                className="text-left"
+                className="text-left text-sm sm:text-base py-2 px-4"
               >
                 {answer}
               </Button>

@@ -13,10 +13,10 @@ function App() {
   return (
     <Router>
       <Layout className="min-h-screen">
-        <Header className="bg-white">
+        <Header className="bg-white px-4">
           <Navigation />
         </Header>
-        <Content className="max-w-4xl mx-auto p-6">
+        <Content className="w-full max-w-4xl mx-auto p-4 sm:p-6">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quiz" element={<Quiz />} />

@@ -28,9 +28,9 @@ function ReviewAnswers() {
     }
 
     return (
-        <div className="max-w-3xl mx-auto p-4">
-            <Space className="w-full justify-between mb-4">
-                <Title level={2}>Review Answers</Title>
+        <div className="w-full max-w-3xl mx-auto p-4">
+            <Space className="w-full justify-between mb-4 flex-wrap">
+                <Title level={2} className="text-lg sm:text-2xl !mb-0">Review Answers</Title>
                 <Button type="primary" icon={<HomeFilled />} onClick={() => navigate('/')}>
                     Back to Home
                 </Button>
@@ -42,23 +42,31 @@ function ReviewAnswers() {
                     if (!userAnswer) return null;
 
                     return (
-                        <Card className="mb-4" key={index}>
-                            <Space direction="vertical" className="w-full">
-                                <Text strong>{`Question ${index + 1}: ${question.question}`}</Text>
-                                <Space>
-                                    <Text>Your answer: </Text>
-                                    <Tag color={userAnswer.isCorrect ? 'success' : 'error'}>
+                        <Card className="mb-4" key={index} size="small" bodyStyle={{ padding: '12px' }}>
+                            <Space direction="vertical" className="w-full" size="small">
+                                <Text strong className="text-sm sm:text-base">
+                                    {`Question ${index + 1}: ${question.question}`}
+                                </Text>
+                                <Space className="flex-wrap">
+                                    <Text className="text-xs sm:text-sm">Your answer: </Text>
+                                    <Tag color={userAnswer.isCorrect ? 'success' : 'error'} className="text-xs sm:text-sm">
                                         {question.answers[userAnswer.userAnswer]}
                                     </Tag>
                                 </Space>
-                                <Space>
-                                    <Text>Correct answer: </Text>
-                                    <Tag color="success">{question.answers[question.correct]}</Tag>
+                                <Space className="flex-wrap">
+                                    <Text className="text-xs sm:text-sm">Correct answer: </Text>
+                                    <Tag color="success" className="text-xs sm:text-sm">
+                                        {question.answers[question.correct]}
+                                    </Tag>
                                 </Space>
                                 {userAnswer.isCorrect ? (
-                                    <Text type="success"><CheckCircleFilled /> Correct!</Text>
+                                    <Text type="success" className="text-xs sm:text-sm">
+                                        <CheckCircleFilled /> Correct!
+                                    </Text>
                                 ) : (
-                                    <Text type="danger"><CloseCircleFilled /> Incorrect</Text>
+                                    <Text type="danger" className="text-xs sm:text-sm">
+                                        <CloseCircleFilled /> Incorrect
+                                    </Text>
                                 )}
                             </Space>
                         </Card>
