@@ -14,7 +14,7 @@ const Question277 = () => {
   useEffect(() => {
     const fetchQuestionSet = async () => {
       try {
-        const response = await fetch('https://qlda-8ec11-default-rtdb.asia-southeast1.firebasedatabase.app/277/-OCZeDWiLN4v3Fi5SCp1/questions.json');
+        const response = await fetch('https://qlda-8ec11-default-rtdb.asia-southeast1.firebasedatabase.app/277/-OCcPxP7mgos5yKb_9Tg/questions.json');
         const questions = await response.json();
         
         // Split questions into sets of 50
