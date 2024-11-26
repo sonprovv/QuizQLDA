@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from 'antd';
+import { Analytics } from "@vercel/analytics/react";
 import Navigation from './components/Navigation';
 import Home from './pages/Home';
 import Quiz from './pages/Quiz';
@@ -39,6 +40,7 @@ function App() {
           </Routes>
         </Content>
       </Layout>
+      <Analytics />
     </Router>
   );
 }
