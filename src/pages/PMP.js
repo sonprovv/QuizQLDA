@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Typography, Spin, message, Collapse, Button } from 'antd';
+import { Typography, Spin, message, Card, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
 const { Title } = Typography;
-const { Panel } = Collapse;
 
 function PMP() {
   const [chapters, setChapters] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedChapters, setSelectedChapters] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,14 +32,8 @@ function PMP() {
     loadChapters();
   }, []);
 
-  const handleSelectChapter = (chapterId) => {
-    setSelectedChapters(prev => 
-      prev.includes(chapterId) ? prev.filter(id => id !== chapterId) : [...prev, chapterId]
-    );
-  };
-
-  const startQuiz = () => {
-    navigate('/quiz-pmp', { state: { selectedChapters } });
+  const startQuiz = (chapterId) => {
+    navigate('/quiz-pmp', { state: { selectedChapters: [chapterId] } });
   };
 
   if (loading) {
@@ -57,27 +49,35 @@ function PMP() {
       <Title className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl !mb-0">
         PMP EXAM PREP
       </Title>
-      <div className="w-full max-w-4xl bg-white rounded-lg shadow-md p-3 sm:p-6">
-        <Collapse accordion>
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {chapters.map((chapter) => (
-            <Panel header={`${chapter.name} (${chapter.questions?.length || 0} questions)`} key={chapter.id}>
-              <Button 
-                type={selectedChapters.includes(chapter.id) ? "primary" : "default"} 
-                onClick={() => handleSelectChapter(chapter.id)}
-              >
-                {selectedChapters.includes(chapter.id) ? "Bỏ chọn" : "Chọn"}
-              </Button>
-            </Panel>
+            <Card 
+              key={chapter.id}
+              hoverable
+              className="h-[200px] flex flex-col"
+              bodyStyle={{ 
+                height: '100%',
+                padding: '16px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}
+            >
+              <div className="flex flex-col flex-1">
+                <h3 className="text-lg font-semibold text-center mb-4">{chapter.name}</h3>
+                <p className="text-center text-gray-600 mb-auto">{chapter.questions?.length || 0} câu hỏi</p>
+                <Button 
+                  type="primary"
+                  onClick={() => startQuiz(chapter.id)}
+                  block
+                  className="mt-auto"
+                >
+                  Bắt đầu
+                </Button>
+              </div>
+            </Card>
           ))}
-        </Collapse>
-        <Button 
-          type="primary" 
-          className="mt-4" 
-          onClick={startQuiz} 
-          disabled={selectedChapters.length === 0}
-        >
-          Bắt đầu làm bài
-        </Button>
+        </div>
       </div>
     </div>
   );

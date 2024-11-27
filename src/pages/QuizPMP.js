@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card, Button, Space, Progress, Typography, Modal, Spin, message } from 'antd';
 import { StopOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ function QuizPMP() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [canNavigate, setCanNavigate] = useState(false);
+  const [countdown, setCountdown] = useState(null);
   const { selectedChapters } = location.state || {};
 
   useEffect(() => {
@@ -57,9 +58,64 @@ function QuizPMP() {
     }
   }, [selectedChapters]);
 
+  const handleEndQuiz = useCallback(() => {
+    navigate('/result-pmp', { 
+      state: { 
+        score,
+        total: questions.length,
+        questions,
+        userAnswers,
+        isPMP: true
+      } 
+    });
+  }, [navigate, score, questions, userAnswers]);
+
+  const handleNext = useCallback(() => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      // Kiểm tra xem câu tiếp theo đã được trả lời chưa
+      const nextAnswer = userAnswers.find(a => a.questionIndex === currentQuestion + 1);
+      if (nextAnswer) {
+        setShowAnswer(true);
+        setSelectedAnswer(nextAnswer.userAnswer);
+      } else {
+        setShowAnswer(false);
+        setSelectedAnswer(null);
+      }
+      setCanNavigate(false);
+      setCountdown(null);
+    } else {
+      handleEndQuiz();
+    }
+  }, [currentQuestion, questions.length, handleEndQuiz, userAnswers]);
+
+  useEffect(() => {
+    let timer;
+    if (showAnswer) {
+      setCountdown(5);
+      timer = setInterval(() => {
+        setCountdown((prevCount) => {
+          if (prevCount <= 1) {
+            clearInterval(timer);
+            handleNext();
+            return null;
+          }
+          return prevCount - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      clearInterval(timer);
+    };
+  }, [showAnswer, handleNext]);
+
   const handleAnswerClick = (answerIndex) => {
     if (showAnswer) return;
     
+    // Kiểm tra xem câu này đã được trả lời chưa
+    const existingAnswer = userAnswers.find(a => a.questionIndex === currentQuestion);
+    if (existingAnswer) return;
+
     const isCorrect = answerIndex === questions[currentQuestion].correct;
     setSelectedAnswer(answerIndex);
     setShowAnswer(true);
@@ -75,38 +131,17 @@ function QuizPMP() {
     }]);
   };
 
-  const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setShowAnswer(false);
-      setSelectedAnswer(null);
-      setCanNavigate(false);
-    } else {
-      handleEndQuiz();
-    }
-  };
-
   const handlePrevious = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(currentQuestion - 1);
+      // Lấy câu trả lời trước đó
       const prevAnswer = userAnswers.find(a => a.questionIndex === currentQuestion - 1);
       if (prevAnswer) {
         setShowAnswer(true);
         setSelectedAnswer(prevAnswer.userAnswer);
+        setCanNavigate(true);
       }
     }
-  };
-
-  const handleEndQuiz = () => {
-    navigate('/result-pmp', { 
-      state: { 
-        score,
-        total: questions.length,
-        questions,
-        userAnswers,
-        isPMP: true
-      } 
-    });
   };
 
   if (loading) {
@@ -119,11 +154,11 @@ function QuizPMP() {
 
   return (
     <div className="p-4 min-h-screen bg-gray-50">
-      <Card className="w-full max-w-4xl mx-auto">
+      <Card className="w-full max-w-4xl mx-auto shadow-lg">
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <Progress 
-              percent={((currentQuestion + 1) / questions.length) * 100} 
+              percent={Math.round((currentQuestion / questions.length) * 100)} 
               className="flex-1 mr-4"
             />
             <Button 
@@ -136,57 +171,67 @@ function QuizPMP() {
             </Button>
           </div>
 
-          <Title level={4}>{questions[currentQuestion].question}</Title>
+          <Card className="bg-blue-50">
+            <Text strong className="text-base">
+              {questions[currentQuestion].question}
+            </Text>
+          </Card>
 
           <Space direction="vertical" className="w-full">
             {questions[currentQuestion].answers.map((answer, index) => (
-              <Button
+              <Card
                 key={index}
-                block
-                onClick={() => handleAnswerClick(index)}
-                className={`text-left ${
+                hoverable
+                className={`cursor-pointer transition-all duration-300 ${
                   showAnswer && index === questions[currentQuestion].correct
-                    ? 'border-green-500'
+                    ? 'border-2 border-green-500 bg-green-50'
                     : showAnswer && index === selectedAnswer
-                    ? 'border-red-500'
-                    : ''
+                    ? 'border-2 border-red-500 bg-red-50'
+                    : 'hover:border-blue-500'
                 }`}
-                disabled={showAnswer}
+                onClick={() => !showAnswer && handleAnswerClick(index)}
               >
-                {answer}
-                {showAnswer && index === questions[currentQuestion].correct && (
-                  <CheckCircleOutlined className="text-green-500 ml-2" />
-                )}
-                {showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct && (
-                  <CloseCircleOutlined className="text-red-500 ml-2" />
-                )}
-              </Button>
+                <div className="flex justify-between items-center">
+                  <span>{answer}</span>
+                  {showAnswer && index === questions[currentQuestion].correct && (
+                    <CheckCircleOutlined className="text-green-500 text-xl" />
+                  )}
+                  {showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct && (
+                    <CloseCircleOutlined className="text-red-500 text-xl" />
+                  )}
+                </div>
+              </Card>
             ))}
           </Space>
 
           {showAnswer && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <Text strong>
-                {selectedAnswer === questions[currentQuestion].correct ? "✅ Đúng!" : "❌ Sai!"}
+            <Card className="bg-gray-50 border-blue-200">
+              <Text strong className="block mb-2 text-lg">
+                {selectedAnswer === questions[currentQuestion].correct 
+                  ? "✅ Chính xác!" 
+                  : "❌ Chưa chính xác!"}
               </Text>
-              <Text className="block mt-2">
-                Giải thích: {questions[currentQuestion].explanation}
+              <Text className="block text-gray-700">
+                <strong>Giải thích:</strong> {questions[currentQuestion].explanation}
               </Text>
-            </div>
+            </Card>
           )}
 
-          <div className="flex justify-between mt-4">
-            <Button onClick={handlePrevious} disabled={currentQuestion === 0}>
-              Câu trước
-            </Button>
-            <Button 
-              type="primary" 
-              onClick={handleNext}
-              disabled={!showAnswer}
-            >
-              {currentQuestion === questions.length - 1 ? 'Hoàn thành' : 'Câu tiếp'}
-            </Button>
-          </div>
+          <Card className="bg-transparent border-none">
+            <div className="flex justify-between">
+              <Button onClick={handlePrevious} disabled={currentQuestion === 0}>
+                Câu trước
+              </Button>
+              <Text>{countdown && `Chuyển câu sau ${countdown}s`}</Text>
+              <Button 
+                type="primary" 
+                onClick={handleNext}
+                disabled={!showAnswer}
+              >
+                {currentQuestion === questions.length - 1 ? 'Hoàn thành' : 'Câu tiếp'}
+              </Button>
+            </div>
+          </Card>
         </div>
       </Card>
 
