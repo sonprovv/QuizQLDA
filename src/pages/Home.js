@@ -49,8 +49,8 @@ function Home() {
       .chatbase-bubble-iframe {
         bottom: 20px !important;
         right: 20px !important;
-        height: 65px !important;
-        width: 65px !important;
+        height: 20px !important;
+        width: 20px !important;
         border-radius: 50% !important;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
         transition: all 0.3s ease !important;
@@ -60,12 +60,12 @@ function Home() {
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15) !important;
       }
       .chatbase-container-iframe {
-        bottom: 90px !important;
+        bottom: 70px !important;
         right: 20px !important;
-        height: 600px !important;
-        max-height: 80vh !important;
-        width: 400px !important;
-        border-radius: 12px !important;
+        height: 400px !important;
+        max-height: 40vh !important;
+        width: 150px !important;
+        border-radius: 10px !important;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1) !important;
       }
     `;

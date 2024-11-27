@@ -20,16 +20,16 @@ import ReviewPMP from './pages/ReviewPMP';
 import ViewAllPMP from './pages/ViewAllPMP';
 import './App.css';
 
-const { Header, Content } = Layout;
+const { Header, Content, Footer } = Layout;
 
 function App() {
   return (
     <Router>
-      <Layout className="min-h-screen">
+      <Layout className="min-h-screen flex flex-col">
         <Header className="bg-white px-4">
           <Navigation />
         </Header>
-        <Content className="w-full max-w-4xl mx-auto p-4 sm:p-6">
+        <Content className="w-full max-w-4xl mx-auto p-4 sm:p-6 flex-grow">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/quiz" element={<Quiz />} />
@@ -49,6 +49,14 @@ function App() {
             <Route path="/view-all-pmp" element={<ViewAllPMP />} />
           </Routes>
         </Content>
+        <Footer className="text-center bg-white mt-auto">
+          <p className="text-gray-600">
+            © {new Date().getFullYear()} | Web : <a href="https://github.com/Duy-Thong" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Đào Duy Thông</a> | Data: <a href="https://github.com/HaNguyen1099" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Nguyễn Ngọc Hà</a>
+          </p>
+          <p className="text-gray-500 text-sm mt-1">
+            Project Management - PTIT
+          </p>
+        </Footer>
       </Layout>
       <Analytics />
     </Router>
