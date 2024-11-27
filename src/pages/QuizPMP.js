@@ -153,36 +153,37 @@ function QuizPMP() {
   }
 
   return (
-    <div className="p-4 min-h-screen bg-gray-50">
+    <div className="p-2 sm:p-4 min-h-screen bg-gray-50">
       <Card className="w-full max-w-4xl mx-auto shadow-lg">
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
+        <div className="space-y-2 sm:space-y-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4">
             <Progress 
               percent={Math.round((currentQuestion / questions.length) * 100)} 
-              className="flex-1 mr-4"
+              className="w-full sm:flex-1"
             />
             <Button 
               type="default" 
               danger
               icon={<StopOutlined />}
               onClick={() => setShowEndModal(true)}
+              className="w-full sm:w-auto"
             >
               Kết thúc bài thi
             </Button>
           </div>
 
           <Card className="bg-blue-50">
-            <Text strong className="text-base">
+            <Text strong className="text-sm sm:text-base">
               {questions[currentQuestion].question}
             </Text>
           </Card>
 
-          <Space direction="vertical" className="w-full">
+          <Space direction="vertical" className="w-full" size="small">
             {questions[currentQuestion].answers.map((answer, index) => (
               <Card
                 key={index}
                 hoverable
-                className={`cursor-pointer transition-all duration-300 ${
+                className={`cursor-pointer transition-all duration-300 text-sm sm:text-base ${
                   showAnswer && index === questions[currentQuestion].correct
                     ? 'border-2 border-green-500 bg-green-50'
                     : showAnswer && index === selectedAnswer
@@ -192,12 +193,12 @@ function QuizPMP() {
                 onClick={() => !showAnswer && handleAnswerClick(index)}
               >
                 <div className="flex justify-between items-center">
-                  <span>{answer}</span>
+                  <span className="pr-2">{answer}</span>
                   {showAnswer && index === questions[currentQuestion].correct && (
-                    <CheckCircleOutlined className="text-green-500 text-xl" />
+                    <CheckCircleOutlined className="text-green-500 text-lg sm:text-xl flex-shrink-0" />
                   )}
                   {showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct && (
-                    <CloseCircleOutlined className="text-red-500 text-xl" />
+                    <CloseCircleOutlined className="text-red-500 text-lg sm:text-xl flex-shrink-0" />
                   )}
                 </div>
               </Card>
@@ -206,27 +207,32 @@ function QuizPMP() {
 
           {showAnswer && (
             <Card className="bg-gray-50 border-blue-200">
-              <Text strong className="block mb-2 text-lg">
+              <Text strong className="block mb-1 sm:mb-2 text-base sm:text-lg">
                 {selectedAnswer === questions[currentQuestion].correct 
                   ? "✅ Chính xác!" 
                   : "❌ Chưa chính xác!"}
               </Text>
-              <Text className="block text-gray-700">
+              <Text className="block text-gray-700 text-sm sm:text-base">
                 <strong>Giải thích:</strong> {questions[currentQuestion].explanation}
               </Text>
             </Card>
           )}
 
           <Card className="bg-transparent border-none">
-            <div className="flex justify-between">
-              <Button onClick={handlePrevious} disabled={currentQuestion === 0}>
+            <div className="flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
+              <Button 
+                onClick={handlePrevious} 
+                disabled={currentQuestion === 0}
+                className="w-full sm:w-auto"
+              >
                 Câu trước
               </Button>
-              <Text>{countdown && `Chuyển câu sau ${countdown}s`}</Text>
+              <Text className="text-center">{countdown && `Chuyển câu sau ${countdown}s`}</Text>
               <Button 
                 type="primary" 
                 onClick={handleNext}
                 disabled={!showAnswer}
+                className="w-full sm:w-auto"
               >
                 {currentQuestion === questions.length - 1 ? 'Hoàn thành' : 'Câu tiếp'}
               </Button>

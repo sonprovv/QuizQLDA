@@ -93,103 +93,134 @@ function ViewAllPMP() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <Card className="shadow-lg">
-        <Space direction="vertical" className="w-full mb-6">
-          <Title level={2} className="text-center text-blue-500 mb-6 flex items-center justify-center">
-            <BookOutlined className="mr-2" />
-            Tất cả câu hỏi và đáp án PMP
-          </Title>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto">
+        <Card className="shadow-xl rounded-xl border-0">
+          <Space direction="vertical" className="w-full mb-8">
+            <div className="text-center">
+              <Title level={2} className="!text-3xl md:!text-4xl !mb-2 text-blue-600 flex items-center justify-center">
+                <BookOutlined className="mr-3" />
+                Tất cả câu hỏi và đáp án PMP
+              </Title>
+              <Text type="secondary" className="text-lg">
+                Tìm kiếm và lọc câu hỏi theo chương
+              </Text>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Select
-              className="w-full"
-              placeholder={<><FilterOutlined /> Chọn chương</>}
-              defaultValue="all"
-              onChange={setSelectedChapter}
-            >
-              <Select.Option value="all">Tất cả các chương</Select.Option>
-              {chapters.map(chapter => (
-                <Select.Option key={chapter.id} value={chapter.id}>
-                  {chapter.name}
-                </Select.Option>
-              ))}
-            </Select>
-
-            <Search
-              placeholder="Tìm kiếm câu hỏi, đáp án hoặc giải thích..."
-              allowClear
-              enterButton={<>
-                <SearchOutlined /> Tìm kiếm
-              </>}
-              size="large"
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-
-          <Text type="secondary" className="text-sm">
-            <FilterOutlined className="mr-1" />
-            Hiển thị {filteredQuestions.length} / {questions.length} câu hỏi
-          </Text>
-        </Space>
-
-        <List
-          itemLayout="vertical"
-          dataSource={filteredQuestions}
-          renderItem={(question, index) => (
-            <List.Item className="mb-4">
-              <Card 
-                type="inner" 
-                className="hover:shadow-md transition-shadow duration-300"
-                title={
-                  <Space>
-                    <QuestionCircleOutlined className="text-blue-500" />
-                    <span>Câu {index + 1}</span>
-                    <Text type="secondary" className="text-sm">({question.chapterName})</Text>
-                  </Space>
+            <div className="mt-6 space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6">
+              <Select
+                className="w-full"
+                size="large"
+                placeholder={
+                  <span className="flex items-center">
+                    <FilterOutlined className="mr-2" />
+                    Chọn chương
+                  </span>
                 }
+                defaultValue="all"
+                onChange={setSelectedChapter}
               >
-                <Text strong className="text-base block mb-4">
-                  {question.question}
-                </Text>
+                <Select.Option value="all">Tất cả các chương</Select.Option>
+                {chapters.map(chapter => (
+                  <Select.Option key={chapter.id} value={chapter.id}>
+                    {chapter.name}
+                  </Select.Option>
+                ))}
+              </Select>
 
-                <div className="space-y-2">
-                  {Object.entries(question.options || {}).map(([letter, option]) => (
-                    <div
-                      key={letter}
-                      style={getAnswerStyle(letter, question.answer)}
-                      className="hover:shadow-sm transition-all duration-300"
-                    >
-                      <Text strong className="w-6">
-                        {letter}.
+              <Search
+                placeholder="Tìm kiếm câu hỏi, đáp án hoặc giải thích..."
+                allowClear
+                enterButton={
+                  <span className="flex items-center">
+                    <SearchOutlined className="mr-2" />
+                    Tìm kiếm
+                  </span>
+                }
+                size="large"
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full"
+              />
+            </div>
+
+            <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
+              <Text>
+                <FilterOutlined className="mr-2" />
+                Hiển thị {filteredQuestions.length} / {questions.length} câu hỏi
+              </Text>
+            </div>
+          </Space>
+
+          <List
+            itemLayout="vertical"
+            dataSource={filteredQuestions}
+            renderItem={(question, index) => (
+              <List.Item className="!px-0 !py-4">
+                <Card 
+                  type="inner" 
+                  className="transform transition-all duration-300 hover:shadow-lg border border-gray-200"
+                  title={
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                      <Space className="text-lg">
+                        <QuestionCircleOutlined className="text-blue-500" />
+                        <span className="font-semibold">Câu {index + 1}</span>
+                      </Space>
+                      <Text type="secondary" className="text-sm">
+                        {question.chapterName}
                       </Text>
-                      <div className="flex-1">
-                        {option}
-                      </div>
-                      {letter === question.answer && (
-                        <Text className="text-green-500 ml-auto flex items-center">
-                          <CheckCircleOutlined className="mr-1" /> Đáp án đúng
-                        </Text>
-                      )}
                     </div>
-                  ))}
-                </div>
+                  }
+                >
+                  <Text strong className="text-base md:text-lg block mb-6">
+                    {question.question}
+                  </Text>
 
-                {question.explanation && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
-                    <Text strong className="flex items-center">
-                      <InfoCircleOutlined className="mr-2 text-blue-500" />
-                      Giải thích:
-                    </Text>
-                    <Text className="block mt-2">{question.explanation}</Text>
+                  <div className="space-y-3">
+                    {Object.entries(question.options || {}).map(([letter, option]) => (
+                      <div
+                        key={letter}
+                        className={`
+                          rounded-lg p-4 border transition-all duration-300
+                          ${letter === question.answer 
+                            ? 'border-green-500 bg-green-50 hover:bg-green-100' 
+                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}
+                        `}
+                      >
+                        <div className="flex items-start gap-3">
+                          <Text strong className="text-lg min-w-[24px]">
+                            {letter}.
+                          </Text>
+                          <div className="flex-1">
+                            <Text className="text-base">{option}</Text>
+                          </div>
+                          {letter === question.answer && (
+                            <Text className="text-green-600 whitespace-nowrap flex items-center">
+                              <CheckCircleOutlined className="mr-2" />
+                              Đáp án đúng
+                            </Text>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                )}
-              </Card>
-            </List.Item>
-          )}
-        />
-      </Card>
+
+                  {question.explanation && (
+                    <div className="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                      <Text strong className="flex items-center text-blue-700">
+                        <InfoCircleOutlined className="mr-2 text-blue-500" />
+                        Giải thích:
+                      </Text>
+                      <Text className="block mt-2 text-gray-700">
+                        {question.explanation}
+                      </Text>
+                    </div>
+                  )}
+                </Card>
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
     </div>
   );
 }
