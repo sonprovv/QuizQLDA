@@ -38,39 +38,46 @@ function PMP() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-[calc(100vh-64px)]">
         <Spin size="large" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center space-y-4 sm:space-y-8 mt-4 sm:mt-8 px-2 sm:px-4">
-      <Title className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl !mb-0">
-        PMP EXAM PREP
-      </Title>
-      <div className="w-full max-w-6xl">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="min-h-[calc(100vh-64px)]">
+      <div className="w-full mx-auto">
+        <Title level={2} className="text-center mb-8 !text-gray-800">
+          PMP EXAM PREP
+        </Title>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {chapters.map((chapter) => (
             <Card 
               key={chapter.id}
               hoverable
-              className="h-[200px] flex flex-col"
+              className="transition-all duration-300 hover:shadow-lg border border-gray-200"
               bodyStyle={{ 
-                height: '100%',
-                padding: '16px',
+                height: '240px',
+                padding: '24px',
                 display: 'flex',
                 flexDirection: 'column'
               }}
             >
-              <div className="flex flex-col flex-1">
-                <h3 className="text-lg font-semibold text-center mb-4">{chapter.name}</h3>
-                <p className="text-center text-gray-600 mb-auto">{chapter.questions?.length || 0} câu hỏi</p>
+              <div className="flex flex-col h-full">
+                <h3 className="text-xl font-medium text-gray-800 text-center mb-4">
+                  {chapter.name}
+                </h3>
+                <div className="flex items-center justify-center flex-1 mb-6">
+                  <span className="text-lg text-gray-600">
+                    {chapter.questions?.length || 0} câu hỏi
+                  </span>
+                </div>
                 <Button 
                   type="primary"
                   onClick={() => startQuiz(chapter.id)}
-                  block
-                  className="mt-auto"
+                  size="large"
+                  className="w-full bg-blue-600 hover:bg-blue-700 transition-colors"
                 >
                   Bắt đầu
                 </Button>
@@ -78,12 +85,14 @@ function PMP() {
             </Card>
           ))}
         </div>
-        <div className="mt-8 flex justify-center space-y-4">
+
+        <div className="mt-12 text-center">
           <Button 
-            type="primary" 
+            type="primary"
             size="large"
             onClick={() => navigate('/view-all-pmp')}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="min-w-[200px] h-12 text-lg bg-green-600 hover:bg-green-700 
+                       transition-colors shadow-md hover:shadow-lg"
           >
             Xem tất cả câu hỏi và đáp án
           </Button>

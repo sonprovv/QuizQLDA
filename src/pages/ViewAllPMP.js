@@ -1,6 +1,13 @@
-import React, { useState, useMemo,useEffect } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Typography, List, Input, Space, Select, Spin, message } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { 
+  SearchOutlined, 
+  BookOutlined, 
+  CheckCircleOutlined,
+  QuestionCircleOutlined,
+  InfoCircleOutlined,
+  FilterOutlined
+} from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -73,7 +80,8 @@ function ViewAllPMP() {
     background: letter === correctAnswer ? '#f6ffed' : '#ffffff',
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
+    transition: 'all 0.3s ease'
   });
 
   if (loading) {
@@ -85,17 +93,18 @@ function ViewAllPMP() {
   }
 
   return (
-    <div style={{ maxWidth: 800, margin: '20px auto', padding: '0 16px' }}>
-      <Card>
-        <Space direction="vertical" style={{ width: '100%', marginBottom: 24 }}>
-          <Title level={2} style={{ textAlign: 'center', color: '#1890ff', marginBottom: 24 }}>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <Card className="shadow-lg">
+        <Space direction="vertical" className="w-full mb-6">
+          <Title level={2} className="text-center text-blue-500 mb-6 flex items-center justify-center">
+            <BookOutlined className="mr-2" />
             Tất cả câu hỏi và đáp án PMP
           </Title>
 
-          <Space direction="vertical" style={{ width: '100%' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Select
-              style={{ width: '100%' }}
-              placeholder="Chọn chương"
+              className="w-full"
+              placeholder={<><FilterOutlined /> Chọn chương</>}
               defaultValue="all"
               onChange={setSelectedChapter}
             >
@@ -110,13 +119,17 @@ function ViewAllPMP() {
             <Search
               placeholder="Tìm kiếm câu hỏi, đáp án hoặc giải thích..."
               allowClear
-              enterButton="Tìm kiếm"
+              enterButton={<>
+                <SearchOutlined /> Tìm kiếm
+              </>}
               size="large"
               onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
             />
-          </Space>
+          </div>
 
-          <Text type="secondary">
+          <Text type="secondary" className="text-sm">
+            <FilterOutlined className="mr-1" />
             Hiển thị {filteredQuestions.length} / {questions.length} câu hỏi
           </Text>
         </Space>
@@ -125,35 +138,38 @@ function ViewAllPMP() {
           itemLayout="vertical"
           dataSource={filteredQuestions}
           renderItem={(question, index) => (
-            <List.Item>
+            <List.Item className="mb-4">
               <Card 
                 type="inner" 
+                className="hover:shadow-md transition-shadow duration-300"
                 title={
                   <Space>
+                    <QuestionCircleOutlined className="text-blue-500" />
                     <span>Câu {index + 1}</span>
-                    <Text type="secondary">({question.chapterName})</Text>
+                    <Text type="secondary" className="text-sm">({question.chapterName})</Text>
                   </Space>
                 }
               >
-                <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '16px' }}>
+                <Text strong className="text-base block mb-4">
                   {question.question}
                 </Text>
 
-                <div style={{ padding: '8px 0' }}>
+                <div className="space-y-2">
                   {Object.entries(question.options || {}).map(([letter, option]) => (
                     <div
                       key={letter}
                       style={getAnswerStyle(letter, question.answer)}
+                      className="hover:shadow-sm transition-all duration-300"
                     >
-                      <Text strong style={{ width: '24px' }}>
+                      <Text strong className="w-6">
                         {letter}.
                       </Text>
-                      <div style={{ flex: 1 }}>
+                      <div className="flex-1">
                         {option}
                       </div>
                       {letter === question.answer && (
-                        <Text style={{ color: '#52c41a', marginLeft: 'auto' }}>
-                          ✓ Đáp án đúng
+                        <Text className="text-green-500 ml-auto flex items-center">
+                          <CheckCircleOutlined className="mr-1" /> Đáp án đúng
                         </Text>
                       )}
                     </div>
@@ -161,15 +177,12 @@ function ViewAllPMP() {
                 </div>
 
                 {question.explanation && (
-                  <div style={{
-                    marginTop: '16px',
-                    padding: '16px',
-                    background: '#f5f5f5',
-                    borderRadius: '8px',
-                    borderLeft: '4px solid #1890ff'
-                  }}>
-                    <Text strong>Giải thích: </Text>
-                    <Text>{question.explanation}</Text>
+                  <div className="mt-4 p-4 bg-gray-50 rounded-lg border-l-4 border-blue-500">
+                    <Text strong className="flex items-center">
+                      <InfoCircleOutlined className="mr-2 text-blue-500" />
+                      Giải thích:
+                    </Text>
+                    <Text className="block mt-2">{question.explanation}</Text>
                   </div>
                 )}
               </Card>
