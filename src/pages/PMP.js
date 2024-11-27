@@ -78,6 +78,16 @@ function PMP() {
             </Card>
           ))}
         </div>
+        <div className="mt-8 flex justify-center space-y-4">
+          <Button 
+            type="primary" 
+            size="large"
+            onClick={() => navigate('/view-all-pmp')}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            Xem tất cả câu hỏi và đáp án
+          </Button>
+        </div>
       </div>
     </div>
   );

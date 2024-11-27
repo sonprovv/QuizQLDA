@@ -17,6 +17,7 @@ import PMP from './pages/PMP';
 import QuizPMP from './pages/QuizPMP';
 import ResultPMP from './pages/ResultPMP';
 import ReviewPMP from './pages/ReviewPMP';
+import ViewAllPMP from './pages/ViewAllPMP';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -45,6 +46,7 @@ function App() {
             <Route path="/quiz-pmp" element={<QuizPMP />} />
             <Route path="/result-pmp" element={<ResultPMP />} />
             <Route path="/review-pmp" element={<ReviewPMP />} />
+            <Route path="/view-all-pmp" element={<ViewAllPMP />} />
           </Routes>
         </Content>
       </Layout>
