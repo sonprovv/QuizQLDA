@@ -71,6 +71,15 @@ function Home() {
             >
               Bài thi 1200 câu
             </Button>
+            <Button
+              type="primary"
+              size="large"
+              icon={<PlayCircleOutlined />}
+              onClick={() => handleStartQuiz('/pmp')}
+              className="w-full sm:w-auto sm:min-w-[200px] h-12 text-base font-medium"
+            >
+              PMP EXAM PREP
+            </Button>
           </div>
         </div>
       </div>

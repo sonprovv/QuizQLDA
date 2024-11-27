@@ -13,6 +13,10 @@ import Question277 from './pages/Question277';
 import Result2 from './pages/Result2';
 import ReviewAnswer2 from './pages/ReviewAnswer2';
 import ViewAllQuestions from './pages/ViewAllQuestions';
+import PMP from './pages/PMP';
+import QuizPMP from './pages/QuizPMP';
+import ResultPMP from './pages/ResultPMP';
+import ReviewPMP from './pages/ReviewPMP';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -34,9 +38,13 @@ function App() {
             <Route path='/review-all-1200' element={<Questions />} />
             <Route path='/1200' element={<Question1200 />} />
             <Route path='/277' element={<Question277 />} />
-            <Route path='result2' element={<Result2 />} />
-            <Route path='review-answers2' element={<ReviewAnswer2 />} />
+            <Route path='/result2' element={<Result2 />} />
+            <Route path='/review-answers2' element={<ReviewAnswer2 />} />
             <Route path="/review-all-277" element={<ViewAllQuestions />} />
+            <Route path="/pmp" element={<PMP />} />
+            <Route path="/quiz-pmp" element={<QuizPMP />} />
+            <Route path="/result-pmp" element={<ResultPMP />} />
+            <Route path="/review-pmp" element={<ReviewPMP />} />
           </Routes>
         </Content>
       </Layout>
