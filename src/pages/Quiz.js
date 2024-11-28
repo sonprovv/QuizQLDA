@@ -42,7 +42,7 @@ function Quiz() {
   // Add new useEffect for auto-navigation
   useEffect(() => {
     if (showAnswer && timer === null) {
-      setTimer(5);
+      setTimer(30);
       const interval = setInterval(() => {
         setTimer((prevTimer) => {
           if (prevTimer <= 1) {
