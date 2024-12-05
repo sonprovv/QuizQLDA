@@ -17,7 +17,6 @@ function Quiz() {
   const [showAnswer, setShowAnswer] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [canNavigate, setCanNavigate] = useState(false);
-  const [timer, setTimer] = useState(null);
   const [sequentialNumbers, setSequentialNumbers] = useState({});
   const selectedPackages = location.state?.packages || [];
 
@@ -38,25 +37,6 @@ function Quiz() {
     }
     setQuestions(location.state.questions);
   }, [location.state, navigate]);
-
-  // Add new useEffect for auto-navigation
-  useEffect(() => {
-    if (showAnswer && timer === null) {
-      setTimer(30);
-      const interval = setInterval(() => {
-        setTimer((prevTimer) => {
-          if (prevTimer <= 1) {
-            clearInterval(interval);
-            handleNext();
-            return null;
-          }
-          return prevTimer - 1;
-        });
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }
-  }, [showAnswer]);
 
   const handleAnswerClick = (answerIndex) => {
     if (showAnswer) return; // Prevent selecting another answer while showing feedback
@@ -154,6 +134,13 @@ function Quiz() {
   if (questions.length === 0) {
     return <div>Loading...</div>;
   }
+  const mapKeyToAlphabet = (key) => {
+    const mapping = ['A', 'B', 'C', 'D'];
+    if (["0", "1", "2", "3"].includes(key)) {
+      return mapping[parseInt(key, 10)]; // Chuyển từ chuỗi số sang số, sau đó lấy chữ cái
+    }
+    return key; // Nếu không thuộc 0, 1, 2, 3 thì giữ nguyên
+  };
 
   return (
     <div className="p-4 min-h-screen bg-gray-50">
@@ -202,17 +189,17 @@ function Quiz() {
                 size="large"
                 onClick={() => !showAnswer && handleAnswerClick(index)}
                 className={`text-left whitespace-pre-wrap break-words min-h-[60px] h-auto py-3 px-4 
-                  ${showAnswer && index === questions[currentQuestion].correct ? 'border-green-500 bg-green-50' : ''}
-                  ${showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct ? 'border-red-500 bg-red-50' : ''}
+                  ${showAnswer && mapKeyToAlphabet(index) === questions[currentQuestion].correct ? 'border-green-500 bg-green-50' : ''}
+                  ${showAnswer && mapKeyToAlphabet(index) === mapKeyToAlphabet(selectedAnswer) && mapKeyToAlphabet(index) !== questions[currentQuestion].correct ? 'border-red-500 bg-red-50' : ''}
                   ${showAnswer ? 'cursor-default' : 'hover:border-gray-400'}`}
                 style={{ opacity: 1 }}
               >
                 <div className="flex">
                   <div className="flex-grow text-sm sm:text-base">{answer}</div>
-                  {showAnswer && index === questions[currentQuestion].correct && (
+                  {showAnswer && mapKeyToAlphabet(index) === questions[currentQuestion].correct && (
                     <CheckCircleOutlined className="text-green-500 ml-2 flex-shrink-0" />
                   )}
-                  {showAnswer && index === selectedAnswer && index !== questions[currentQuestion].correct && (
+                  {showAnswer && mapKeyToAlphabet(index) === mapKeyToAlphabet(selectedAnswer) && mapKeyToAlphabet(index) !== questions[currentQuestion].correct && (
                     <CloseCircleOutlined className="text-red-500 ml-2 flex-shrink-0" />
                   )}
                 </div>
@@ -225,14 +212,15 @@ function Quiz() {
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <div className="flex justify-between items-center">
                 <Text strong>
-                  {selectedAnswer === questions[currentQuestion].correct 
+                {/* Đáp án đúng: {questions[currentQuestion].correct} */}
+                  {mapKeyToAlphabet(selectedAnswer) === questions[currentQuestion].correct 
                     ? "✅ Đúng!" 
                     : "❌ Sai!"}
                 </Text>
-                {timer && <Text>Chuyển câu sau: {timer}s</Text>}
               </div>
               {questions[currentQuestion].explanation && (
                 <Text className="block mt-2 whitespace-pre-wrap break-words">
+                  
                   Giải thích: {questions[currentQuestion].explanation}
                 </Text>
               )}

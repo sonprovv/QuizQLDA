@@ -89,25 +89,25 @@ function QuizPMP() {
     }
   }, [currentQuestion, questions.length, handleEndQuiz, userAnswers]);
 
-  useEffect(() => {
-    let timer;
-    if (showAnswer) {
-      setCountdown(5);
-      timer = setInterval(() => {
-        setCountdown((prevCount) => {
-          if (prevCount <= 1) {
-            clearInterval(timer);
-            handleNext();
-            return null;
-          }
-          return prevCount - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      clearInterval(timer);
-    };
-  }, [showAnswer, handleNext]);
+  // useEffect(() => {
+  //   let timer;
+  //   if (showAnswer) {
+  //     setCountdown(5);
+  //     timer = setInterval(() => {
+  //       setCountdown((prevCount) => {
+  //         if (prevCount <= 1) {
+  //           clearInterval(timer);
+  //           handleNext();
+  //           return null;
+  //         }
+  //         return prevCount - 1;
+  //       });
+  //     }, 1000);
+  //   }
+  //   return () => {
+  //     clearInterval(timer);
+  //   };
+  // }, [showAnswer, handleNext]);
 
   const handleAnswerClick = (answerIndex) => {
     if (showAnswer) return;
@@ -194,6 +194,7 @@ function QuizPMP() {
               >
                 <div className="flex justify-between items-center">
                   <span className="pr-2">{answer}</span>
+                  Đáp án đúng: {questions[currentQuestion].correct}
                   {showAnswer && index === questions[currentQuestion].correct && (
                     <CheckCircleOutlined className="text-green-500 text-lg sm:text-xl flex-shrink-0" />
                   )}
